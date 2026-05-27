@@ -24,6 +24,11 @@ jobs:
           ANDROID_SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
           "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --install "build-tools;28.0.2" "build-tools;30.0.3" "platforms;android-29" "platforms;android-30" "ndk;21.4.7075529" "cmake;3.18.1"
 
+      - name: Remove incompatible SDK packages
+        run: |
+          ANDROID_SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          rm -rf "$ANDROID_SDK_ROOT/platforms/android-34" "$ANDROID_SDK_ROOT/platforms/android-35" "$ANDROID_SDK_ROOT/build-tools/34"* "$ANDROID_SDK_ROOT/build-tools/35"*
+
       - name: Switch to JDK 8 for build
         uses: actions/setup-java@v4
         with:
