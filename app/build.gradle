@@ -152,20 +152,16 @@ dependencies {
     implementation 'com.afollestad.material-dialogs:core:3.3.0'
     implementation 'com.afollestad.material-dialogs:input:3.3.0'
     //dialog
-    implementation 'com.github.nukc.stateview:kotlin:2.2.0'
-    //状态控制控件
-    implementation 'com.roger.catloadinglibrary:catloadinglibrary:1.0.9'
-    //加载dialog
+    implementation 'com.github.nukc:StateView:2.2.0'
+    implementation 'com.github.Rogero0o:CatLoadingView:ec4b032bbf'
     implementation 'com.github.Ferfalk:SimpleSearchView:0.2.0'
     //searchView
     implementation 'com.github.Othershe:CornerLabelView:1.0.0'
-    //图标角标
 
     // osmdroid
     implementation 'org.osmdroid:osmdroid-android:6.1.11'
     //adapter
     implementation 'com.gitee.cbfg5210:RVAdapter:0.3.7'
 
-    //悬浮窗
-    implementation 'com.imuxuan:floatingview:1.6'
+    implementation 'com.github.imuxuan:floatingview:v1.6'
 }
