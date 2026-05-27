@@ -13,10 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 8
+      - name: Set up JDK 17 for SDK setup
         uses: actions/setup-java@v4
         with:
-          java-version: '8'
+          java-version: '17'
           distribution: 'zulu'
 
       - name: Setup Android SDK
@@ -25,6 +25,12 @@ jobs:
       - name: Install Android SDK components
         run: |
           sdkmanager --install "build-tools;28.0.2" "platforms;android-30" "ndk;21.4.7075529" "cmake;3.10.2.4988402"
+
+      - name: Switch to JDK 8 for build
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'zulu'
 
       - name: Cache Gradle
         uses: actions/cache@v4
