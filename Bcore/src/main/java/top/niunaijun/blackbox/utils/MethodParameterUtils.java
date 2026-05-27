@@ -55,8 +55,8 @@ public class MethodParameterUtils {
         if (args == null)
             return;
         for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof Integer) {
-                int uid = (int) args[i];
+            if (args[i] instanceof Number) {
+                int uid = ArrayUtils.toInt(args[i]);
                 if (uid == BActivityThread.getBUid()) {
                     args[i] = BlackBoxCore.getHostUid();
                 }
@@ -65,9 +65,9 @@ public class MethodParameterUtils {
     }
 
     public static void replaceLastUid(Object[] args) {
-        int index = ArrayUtils.indexOfLast(args, Integer.class);
+        int index = ArrayUtils.indexOfLast(args, Number.class);
         if (index != -1) {
-            int uid = (int) args[index];
+            int uid = ArrayUtils.toInt(args[index]);
             if (uid == BActivityThread.getBUid()) {
                 args[index] = BlackBoxCore.getHostUid();
             }

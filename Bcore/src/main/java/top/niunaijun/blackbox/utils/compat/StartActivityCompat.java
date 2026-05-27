@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 
+import top.niunaijun.blackbox.utils.ArrayUtils;
+
 /**
  * Created by Milk on 4/9/21.
  * * ∧＿∧
@@ -99,14 +101,14 @@ public class StartActivityCompat {
         if (args == null || args.length < requestCodeIndex) {
             return -1;
         }
-        return (int) args[requestCodeIndex];
+        return ArrayUtils.toInt(args[requestCodeIndex]);
     }
 
     public static int getFlags(Object[] args) {
         if (args == null || args.length < flagsIndex) {
             return -1;
         }
-        return (int) args[flagsIndex];
+        return ArrayUtils.toInt(args[flagsIndex]);
     }
 
     public static Object getProfilerInfo(Object[] args) {

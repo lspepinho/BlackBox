@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import top.niunaijun.blackbox.BlackBoxCore;
 import top.niunaijun.blackbox.app.BActivityThread;
 import top.niunaijun.blackbox.fake.hook.MethodHook;
+import top.niunaijun.blackbox.utils.ArrayUtils;
 
 /**
  * Created by BlackBox on 2022/3/5.
@@ -25,7 +26,7 @@ public class UidMethodProxy extends MethodHook {
 
     @Override
     protected Object hook(Object who, Method method, Object[] args) throws Throwable {
-        int uid = (int) args[index];
+        int uid = ArrayUtils.toInt(args[index]);
         if (uid == BActivityThread.getBUid()) {
             args[index] = BlackBoxCore.getHostUid();
         }

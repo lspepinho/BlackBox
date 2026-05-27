@@ -13,6 +13,7 @@ import top.niunaijun.blackbox.app.BActivityThread;
 import top.niunaijun.blackbox.fake.hook.BinderInvocationStub;
 import top.niunaijun.blackbox.fake.hook.MethodHook;
 import top.niunaijun.blackbox.fake.hook.ProxyMethod;
+import top.niunaijun.blackbox.utils.ArrayUtils;
 import top.niunaijun.blackbox.utils.compat.BuildCompat;
 
 /**
@@ -62,9 +63,9 @@ public class IStorageManagerProxy extends BinderInvocationStub {
                 return volumeList;
             }
             try {
-                int uid = (int) args[0];
-                String packageName = (String) args[1];
-                int flags = (int) args[2];
+            int uid = ArrayUtils.toInt(args[0]);
+            String packageName = (String) args[1];
+            int flags = ArrayUtils.toInt(args[2]);
                 StorageVolume[] volumeList = BlackBoxCore.getBStorageManager().getVolumeList(uid, packageName, flags, BActivityThread.getUserId());
                 if (volumeList == null) {
                     return method.invoke(who, args);

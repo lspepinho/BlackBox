@@ -112,17 +112,17 @@ public class ArrayUtils {
 		return -1;
 	}
 
-	public static int indexOfLast(Object[] array, Class<?> type) {
-		if (!isEmpty(array)) {
-			for (int N = array.length; N > 0; N--) {
-				Object one = array[N - 1];
-				if (one != null && one.getClass() == type) {
-					return N - 1;
-				}
-			}
-		}
-		return -1;
-	}
+    public static int indexOfLast(Object[] array, Class<?> type) {
+        if (!isEmpty(array)) {
+            for (int N = array.length; N > 0; N--) {
+                Object one = array[N - 1];
+                if (one != null && type.isInstance(one)) {
+                    return N - 1;
+                }
+            }
+        }
+        return -1;
+    }
 
 	public static <T> boolean isEmpty(T[] array) {
 		return array == null || array.length == 0;
@@ -138,7 +138,18 @@ public class ArrayUtils {
 	}
 
 
-	public static void checkOffsetAndCount(int arrayLength, int offset, int count) throws ArrayIndexOutOfBoundsException {
+    public static int toInt(Object value) {
+        if (value instanceof Integer) {
+            return (Integer) value;
+        } else if (value instanceof Long) {
+            return ((Long) value).intValue();
+        } else if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        return 0;
+    }
+
+    public static void checkOffsetAndCount(int arrayLength, int offset, int count) throws ArrayIndexOutOfBoundsException {
 		if ((offset | count) < 0 || offset > arrayLength || arrayLength - offset < count) {
 			throw new ArrayIndexOutOfBoundsException(offset);
 		}

@@ -14,6 +14,7 @@ import top.niunaijun.blackbox.fake.frameworks.BAccountManager;
 import top.niunaijun.blackbox.fake.hook.BinderInvocationStub;
 import top.niunaijun.blackbox.fake.hook.MethodHook;
 import top.niunaijun.blackbox.fake.hook.ProxyMethod;
+import top.niunaijun.blackbox.utils.ArrayUtils;
 import top.niunaijun.blackbox.utils.Slog;
 
 /**
@@ -89,7 +90,7 @@ public class IAccountManagerProxy extends BinderInvocationStub {
 
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
-            return BAccountManager.get().getAccountsForPackage((String) args[0], (int) args[1]);
+            return BAccountManager.get().getAccountsForPackage((String) args[0], ArrayUtils.toInt(args[1]));
         }
     }
 
@@ -164,7 +165,7 @@ public class IAccountManagerProxy extends BinderInvocationStub {
 
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
-            BAccountManager.get().copyAccountToUser((IAccountManagerResponse) args[0], (Account) args[1], (int) args[2], (int) args[3]);
+            BAccountManager.get().copyAccountToUser((IAccountManagerResponse) args[0], (Account) args[1], ArrayUtils.toInt(args[2]), ArrayUtils.toInt(args[3]));
             return 0;
         }
     }
@@ -233,7 +234,7 @@ public class IAccountManagerProxy extends BinderInvocationStub {
 
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
-            BAccountManager.get().updateAppPermission((Account) args[0], (String) args[1], (int) args[2], (boolean) args[3]);
+            BAccountManager.get().updateAppPermission((Account) args[0], (String) args[1], ArrayUtils.toInt(args[2]), (boolean) args[3]);
             return 0;
         }
     }
@@ -370,11 +371,10 @@ public class IAccountManagerProxy extends BinderInvocationStub {
     public static class setAccountVisibility extends MethodHook {
 
         @Override
-        protected Object hook(Object who, Method method, Object[] args) throws Throwable {
-            return BAccountManager.get().setAccountVisibility((Account) args[0],
-                    (String) args[1],
-                    (int) args[2]
-            );
+    protected Object hook(Object who, Method method, Object[] args) throws Throwable {
+        return BAccountManager.get().setAccountVisibility((Account) args[0],
+                (String) args[1], ArrayUtils.toInt(args[2])
+        );
         }
     }
 

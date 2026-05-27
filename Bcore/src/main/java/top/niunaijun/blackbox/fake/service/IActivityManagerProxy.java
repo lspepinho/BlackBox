@@ -46,6 +46,7 @@ import top.niunaijun.blackbox.fake.service.context.providers.ContentProviderStub
 import top.niunaijun.blackbox.proxy.ProxyManifest;
 import top.niunaijun.blackbox.proxy.record.ProxyBroadcastRecord;
 import top.niunaijun.blackbox.proxy.record.ProxyPendingRecord;
+import top.niunaijun.blackbox.utils.ArrayUtils;
 import top.niunaijun.blackbox.utils.MethodParameterUtils;
 import top.niunaijun.blackbox.utils.Reflector;
 import top.niunaijun.blackbox.utils.compat.ActivityManagerCompat;
@@ -335,7 +336,7 @@ public class IActivityManagerProxy extends ClassInvocationStub {
     public static class GetIntentSender extends MethodHook {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
-            int type = (int) args[0];
+            int type = ArrayUtils.toInt(args[0]);
             Intent[] intents = (Intent[]) args[getIntentsIndex(args)];
             MethodParameterUtils.replaceFirstAppPkg(args);
 

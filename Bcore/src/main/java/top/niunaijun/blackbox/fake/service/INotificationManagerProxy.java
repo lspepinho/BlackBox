@@ -18,6 +18,7 @@ import top.niunaijun.blackbox.fake.frameworks.BNotificationManager;
 import top.niunaijun.blackbox.fake.hook.BinderInvocationStub;
 import top.niunaijun.blackbox.fake.hook.MethodHook;
 import top.niunaijun.blackbox.fake.hook.ProxyMethod;
+import top.niunaijun.blackbox.utils.ArrayUtils;
 import top.niunaijun.blackbox.utils.MethodParameterUtils;
 import top.niunaijun.blackbox.utils.compat.BuildCompat;
 import top.niunaijun.blackbox.utils.compat.ParceledListSliceCompat;
@@ -86,31 +87,31 @@ public class INotificationManagerProxy extends BinderInvocationStub {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
             String tag = (String) args[getTagIndex()];
-            int id = (int) args[getIdIndex()];
-            BNotificationManager.get().cancelNotificationWithTag(id, tag);
-            return 0;
-        }
-
-        public int getTagIndex() {
-            if (BuildCompat.isR()) {
-                return 2;
-            }
-            return 1;
-        }
-
-        public int getIdIndex() {
-            return getTagIndex() + 1;
-        }
+        int id = ArrayUtils.toInt(args[getIdIndex()]);
+        BNotificationManager.get().cancelNotificationWithTag(id, tag);
+        return 0;
     }
 
+    public int getTagIndex() {
+        if (BuildCompat.isR()) {
+            return 2;
+        }
+        return 1;
+    }
 
-    @ProxyMethod("enqueueNotificationWithTag")
-    public static class EnqueueNotificationWithTag extends MethodHook {
+    public int getIdIndex() {
+        return getTagIndex() + 1;
+    }
+}
 
-        @Override
-        protected Object hook(Object who, Method method, Object[] args) throws Throwable {
-            String tag = (String) args[getTagIndex()];
-            int id = (int) args[getIdIndex()];
+
+@ProxyMethod("enqueueNotificationWithTag")
+public static class EnqueueNotificationWithTag extends MethodHook {
+
+    @Override
+    protected Object hook(Object who, Method method, Object[] args) throws Throwable {
+        String tag = (String) args[getTagIndex()];
+        int id = ArrayUtils.toInt(args[getIdIndex()]);
             Notification notification = MethodParameterUtils.getFirstParam(args, Notification.class);
             BNotificationManager.get().enqueueNotificationWithTag(id, tag, notification);
             return 0;

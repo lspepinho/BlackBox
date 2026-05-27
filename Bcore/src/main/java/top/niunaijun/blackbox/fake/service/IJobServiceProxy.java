@@ -13,6 +13,7 @@ import top.niunaijun.blackbox.app.BActivityThread;
 import top.niunaijun.blackbox.fake.hook.BinderInvocationStub;
 import top.niunaijun.blackbox.fake.hook.MethodHook;
 import top.niunaijun.blackbox.fake.hook.ProxyMethod;
+import top.niunaijun.blackbox.utils.ArrayUtils;
 
 /**
  * Created by Milk on 4/2/21.
@@ -56,8 +57,8 @@ public class IJobServiceProxy extends BinderInvocationStub {
     public static class Cancel extends MethodHook {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
-            args[0] = BlackBoxCore.getBJobManager()
-                    .cancel(BActivityThread.getAppConfig().processName, (Integer) args[0]);
+        args[0] = BlackBoxCore.getBJobManager()
+                .cancel(BActivityThread.getAppConfig().processName, ArrayUtils.toInt(args[0]));
             return method.invoke(who, args);
         }
     }
