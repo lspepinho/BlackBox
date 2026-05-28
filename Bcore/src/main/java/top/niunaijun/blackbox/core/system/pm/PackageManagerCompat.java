@@ -17,6 +17,7 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Build;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -326,7 +327,7 @@ public class PackageManagerCompat {
                 BRApplicationInfoN.get(ai)._set_credentialProtectedDataDir(ai.dataDir);
             }
         }
-        fixJar(ai);
+        fixJar(ai, p);
         return ai;
     }
 
@@ -341,25 +342,56 @@ public class PackageManagerCompat {
         return true;
     }
 
-    private static void fixJar(ApplicationInfo info) {
+    private static void fixJar(ApplicationInfo info, BPackage pkg) {
         String APACHE_LEGACY_JAR = "/system/framework/org.apache.http.legacy.boot.jar";
         String APACHE_LEGACY_JAR_Q = "/system/framework/org.apache.http.legacy.jar";
         Set<String> sharedLibraryFileList = new HashSet<>();
+
+        if (info.sharedLibraryFiles != null) {
+            for (String lib : info.sharedLibraryFiles) {
+                if (lib != null) sharedLibraryFileList.add(lib);
+            }
+        }
+
+        boolean apacheAdded = false;
         if (BuildCompat.isQ()) {
-            if (!FileUtils.isExist(APACHE_LEGACY_JAR_Q)) {
-                sharedLibraryFileList.add(APACHE_LEGACY_JAR);
-            } else {
+            if (FileUtils.isExist(APACHE_LEGACY_JAR_Q)) {
                 sharedLibraryFileList.add(APACHE_LEGACY_JAR_Q);
+                apacheAdded = true;
+            } else if (FileUtils.isExist(APACHE_LEGACY_JAR)) {
+                sharedLibraryFileList.add(APACHE_LEGACY_JAR);
+                apacheAdded = true;
             }
         } else {
-            sharedLibraryFileList.add(APACHE_LEGACY_JAR);
+            if (FileUtils.isExist(APACHE_LEGACY_JAR)) {
+                sharedLibraryFileList.add(APACHE_LEGACY_JAR);
+                apacheAdded = true;
+            }
         }
-//        if (BXposedManagerService.get().isXPEnable()) {
-//            ApplicationInfo base = BlackBoxCore.getContext().getApplicationInfo();
-//            sharedLibraryFileList.add(base.sourceDir);
-//        }
-//        sharedLibraryFileList.add(BEnvironment.JUNIT_JAR.getAbsolutePath());
+
+        if (pkg != null) {
+            resolveUsesLibraries(pkg.usesLibraries, sharedLibraryFileList);
+            resolveUsesLibraries(pkg.usesOptionalLibraries, sharedLibraryFileList);
+        }
+
         info.sharedLibraryFiles = sharedLibraryFileList.toArray(new String[]{});
+    }
+
+    private static void resolveUsesLibraries(ArrayList<String> libraryNames, Set<String> outPaths) {
+        if (libraryNames == null) return;
+        try {
+            PackageManager pm = BlackBoxCore.getContext().getPackageManager();
+            for (String name : libraryNames) {
+                try {
+                    ApplicationInfo libInfo = pm.getApplicationInfo(name, 0);
+                    if (libInfo.sourceDir != null) {
+                        outPaths.add(libInfo.sourceDir);
+                    }
+                } catch (PackageManager.NameNotFoundException ignored) {
+                }
+            }
+        } catch (Throwable ignored) {
+        }
     }
 
     public static Resources getResources(Context context, ApplicationInfo appInfo) {

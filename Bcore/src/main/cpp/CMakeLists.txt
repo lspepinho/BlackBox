@@ -11,11 +11,13 @@ cmake_minimum_required(VERSION 3.4.1)
 # Gradle automatically packages shared libraries with your APK.
 include_directories(JniHook)
 include_directories(./)
+include_directories(FreeReflection)
 
 aux_source_directory(./ SRC1)
 aux_source_directory(Utils SRC2)
 aux_source_directory(Hook SRC3)
 aux_source_directory(JniHook SRC4)
+aux_source_directory(FreeReflection SRC5)
 add_compile_options(-w)
 add_library( # Sets the name of the library.
         blackbox
@@ -27,6 +29,7 @@ add_library( # Sets the name of the library.
         ${SRC2}
         ${SRC3}
         ${SRC4}
+        ${SRC5}
         )
 
 # Searches for a specified prebuilt library and stores the path as a

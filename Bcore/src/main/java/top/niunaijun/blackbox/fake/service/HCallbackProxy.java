@@ -109,6 +109,10 @@ public class HCallbackProxy implements IInjectHook, Handler.Callback {
     private Object getLaunchActivityItem(Object clientTransaction) {
         List<Object> mActivityCallbacks = BRClientTransaction.get(clientTransaction).mActivityCallbacks();
 
+        if (mActivityCallbacks == null) {
+            return null;
+        }
+
         for (Object obj : mActivityCallbacks) {
             if (BRLaunchActivityItem.getRealClass().getName().equals(obj.getClass().getCanonicalName())) {
                 return obj;

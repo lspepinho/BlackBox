@@ -30,8 +30,20 @@ public class Reflection {
             return 0;
         }
 
+        try {
+            System.loadLibrary("blackbox");
+        } catch (UnsatisfiedLinkError ignored) {
+        }
+
+        int result = unsealNative(context.getApplicationInfo().targetSdkVersion);
+        if (result == 0) {
+            return 0;
+        }
+
         return -1;
     }
+
+    private static native int unsealNative(int targetSdkVersion);
 
     private static boolean unsealByDexFile(Context context) {
         byte[] bytes = Base64.decode(DEX, Base64.NO_WRAP);
