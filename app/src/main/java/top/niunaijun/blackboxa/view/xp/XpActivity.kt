@@ -5,10 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import cbfg.rvadapter.RVAdapter
-import com.afollestad.materialdialogs.MaterialDialog
 import top.niunaijun.blackbox.BlackBoxCore
 import top.niunaijun.blackboxa.R
 import top.niunaijun.blackboxa.bean.XpModuleInfo
@@ -109,15 +109,15 @@ class XpActivity : LoadingActivity() {
 
 
     private fun unInstallModule(packageName: String) {
-        MaterialDialog(this).show {
-            title(R.string.uninstall_module)
-            message(R.string.uninstall_module_hint)
-            positiveButton(R.string.done) {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.uninstall_module)
+            .setMessage(R.string.uninstall_module_hint)
+            .setPositiveButton(R.string.done) { _, _ ->
                 showLoading()
                 viewModel.unInstallModule(packageName)
             }
-            negativeButton(R.string.cancel)
-        }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
 

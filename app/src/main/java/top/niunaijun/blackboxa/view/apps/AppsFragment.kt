@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -14,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import cbfg.rvadapter.RVAdapter
-import com.afollestad.materialdialogs.MaterialDialog
 import top.niunaijun.blackbox.BlackBoxCore
 import top.niunaijun.blackboxa.R
 import top.niunaijun.blackboxa.bean.AppInfo
@@ -243,47 +244,39 @@ class AppsFragment : Fragment() {
     }
 
     private fun unInstallApk(info: AppInfo) {
-        MaterialDialog(requireContext()).show {
-            title(R.string.uninstall_app)
-            message(text = getString(R.string.uninstall_app_hint, info.name))
-            positiveButton(R.string.done) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.uninstall_app)
+            .setMessage(getString(R.string.uninstall_app_hint, info.name))
+            .setPositiveButton(R.string.done) { _, _ ->
                 showLoading()
                 viewModel.unInstall(info.packageName, userID)
             }
-            negativeButton(R.string.cancel)
-        }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
-    /**
-     * 强行停止软件
-     * @param info AppInfo
-     */
     private fun stopApk(info: AppInfo) {
-        MaterialDialog(requireContext()).show {
-            title(R.string.app_stop)
-            message(text = getString(R.string.app_stop_hint,info.name))
-            positiveButton(R.string.done) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.app_stop)
+            .setMessage(getString(R.string.app_stop_hint, info.name))
+            .setPositiveButton(R.string.done) { _, _ ->
                 BlackBoxCore.get().stopPackage(info.packageName, userID)
-                toast(getString(R.string.is_stop,info.name))
+                toast(getString(R.string.is_stop, info.name))
             }
-            negativeButton(R.string.cancel)
-        }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
-    /**
-     * 清除软件数据
-     * @param info AppInfo
-     */
     private fun clearApk(info: AppInfo) {
-        MaterialDialog(requireContext()).show {
-            title(R.string.app_clear)
-            message(text = getString(R.string.app_clear_hint,info.name))
-            positiveButton(R.string.done) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.app_clear)
+            .setMessage(getString(R.string.app_clear_hint, info.name))
+            .setPositiveButton(R.string.done) { _, _ ->
                 showLoading()
                 viewModel.clearApkData(info.packageName, userID)
             }
-            negativeButton(R.string.cancel)
-        }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
 

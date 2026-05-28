@@ -145,23 +145,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
 
 
-    //third
-
-    implementation 'com.tbuonomo:dotsindicator:4.2'
-    //viewPager2 指示点
-    implementation 'com.afollestad.material-dialogs:core:3.3.0'
-    implementation 'com.afollestad.material-dialogs:input:3.3.0'
-    //dialog
-    implementation 'com.github.nukc:StateView:2.2.0'
-    implementation 'com.github.Rogero0o:CatLoadingView:ec4b032bbf'
-    implementation 'com.github.Ferfalk:SimpleSearchView:0.2.0'
-    //searchView
-    implementation 'com.github.Othershe:CornerLabelView:1.0.0'
-
-    // osmdroid
-    implementation 'org.osmdroid:osmdroid-android:6.1.11'
-    //adapter
-    implementation 'com.gitee.cbfg5210:RVAdapter:0.3.7'
-
-    implementation 'com.github.imuxuan:floatingview:v1.6'
+//third
+implementation 'org.osmdroid:osmdroid-android:6.1.20'
+implementation 'com.gitee.cbfg5210:RVAdapter:0.3.7'
 }

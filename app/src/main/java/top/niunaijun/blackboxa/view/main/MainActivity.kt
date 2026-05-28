@@ -6,11 +6,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.viewpager2.widget.ViewPager2
-import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.input.input
+import com.google.android.material.tabs.TabLayoutMediator
 import top.niunaijun.blackbox.BlackBoxCore
 import top.niunaijun.blackboxa.R
 import top.niunaijun.blackboxa.app.App
@@ -48,20 +49,20 @@ class MainActivity : LoadingActivity() {
         updateUserRemark(0)
         //hack code
         viewBinding.toolbarLayout.toolbar.getChildAt(1).setOnClickListener {
-            MaterialDialog(this).show {
-                title(res = R.string.userRemark)
-                input(
-                    hintRes = R.string.userRemark,
-                    prefill = viewBinding.toolbarLayout.toolbar.subtitle
-                ) { _, input ->
+            val input = EditText(this)
+            input.text.append(viewBinding.toolbarLayout.toolbar.subtitle)
+            AlertDialog.Builder(this)
+                .setTitle(R.string.userRemark)
+                .setView(input)
+                .setPositiveButton(R.string.done) { _, _ ->
+                    val remark = input.text.toString()
                     AppManager.mRemarkSharedPreferences.edit {
-                        putString("Remark$currentUser", input.toString())
-                        viewBinding.toolbarLayout.toolbar.subtitle = input
+                        putString("Remark$currentUser", remark)
+                        viewBinding.toolbarLayout.toolbar.subtitle = remark
                     }
                 }
-                positiveButton(res = R.string.done)
-                negativeButton(res = R.string.cancel)
-            }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
         }
     }
 
@@ -78,7 +79,7 @@ class MainActivity : LoadingActivity() {
         mViewPagerAdapter = ViewPagerAdapter(this)
         mViewPagerAdapter.replaceData(fragmentList)
         viewBinding.viewPager.adapter = mViewPagerAdapter
-        viewBinding.dotsIndicator.setViewPager2(viewBinding.viewPager)
+        TabLayoutMediator(viewBinding.dotsIndicator, viewBinding.viewPager) { _, _ -> }.attach()
         viewBinding.viewPager.registerOnPageChangeCallback(object :
             ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {

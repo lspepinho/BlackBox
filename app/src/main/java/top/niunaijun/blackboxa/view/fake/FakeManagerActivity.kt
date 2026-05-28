@@ -7,11 +7,11 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import cbfg.rvadapter.RVAdapter
-import com.afollestad.materialdialogs.MaterialDialog
-import com.ferfalk.simplesearchview.SimpleSearchView
 import top.niunaijun.blackbox.entity.location.BLocation
 import top.niunaijun.blackbox.fake.frameworks.BLocationManager
 import top.niunaijun.blackboxa.R
@@ -66,35 +66,30 @@ class FakeManagerActivity : BaseActivity() {
     }
 
     private fun disableFakeLocation(item: FakeLocationBean,position:Int) {
-        MaterialDialog(this).show {
-            title(R.string.close_fake_location)
-            message(text = getString(R.string.close_app_fake_location,item.name))
-            negativeButton(R.string.cancel)
-            positiveButton(R.string.done){
-                BLocationManager.disableFakeLocation(currentUserID(),item.packageName)
-                toast(getString(R.string.close_fake_location_success,item.name))
+        AlertDialog.Builder(this)
+            .setTitle(R.string.close_fake_location)
+            .setMessage(getString(R.string.close_app_fake_location, item.name))
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.done) { _, _ ->
+                BLocationManager.disableFakeLocation(currentUserID(), item.packageName)
+                toast(getString(R.string.close_fake_location_success, item.name))
                 item.fakeLocationPattern = BLocationManager.CLOSE_MODE
-                mAdapter.replaceAt(position,item)
+                mAdapter.replaceAt(position, item)
             }
-        }
+            .show()
     }
 
     private fun initSearchView() {
         viewBinding.searchView.setOnQueryTextListener(object :
-            SimpleSearchView.OnQueryTextListener {
+            SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
                 filterApp(newText)
-                return true
-            }
-
-            override fun onQueryTextCleared(): Boolean {
                 return true
             }
 
             override fun onQueryTextSubmit(query: String): Boolean {
                 return true
             }
-
         })
     }
 
@@ -164,8 +159,8 @@ class FakeManagerActivity : BaseActivity() {
 
 
     override fun onBackPressed() {
-        if (viewBinding.searchView.isSearchOpen) {
-            viewBinding.searchView.closeSearch()
+        if (!viewBinding.searchView.isIconified) {
+            viewBinding.searchView.isIconified = true
         } else {
             super.onBackPressed()
         }
@@ -173,8 +168,6 @@ class FakeManagerActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_search, menu)
-        val item = menu!!.findItem(R.id.list_search)
-        viewBinding.searchView.setMenuItem(item)
         return true
     }
 

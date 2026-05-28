@@ -18,19 +18,19 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent" />
 
-        <com.ferfalk.simplesearchview.SimpleSearchView
-                android:id="@+id/searchView"
-                app:type="card"
-
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/primary" />
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primary"
+            app:queryHint="@string/filter"
+            app:iconifiedByDefault="true" />
 
     </FrameLayout>
 
 
-    <com.github.nukc.stateview.StateView
-            android:id="@+id/stateView"
+    <top.niunaijun.blackboxa.widget.StateView
+        android:id="@+id/stateView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

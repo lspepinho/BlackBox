@@ -4,10 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Switch
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import cbfg.rvadapter.RVAdapter
-import com.afollestad.materialdialogs.MaterialDialog
 import top.niunaijun.blackboxa.R
 import top.niunaijun.blackboxa.bean.GmsBean
 import top.niunaijun.blackboxa.databinding.ActivityGmsBinding
@@ -70,11 +70,11 @@ class GmsManagerActivity : LoadingActivity() {
             if (result.success) {
                 toast(result.msg)
             } else {
-                MaterialDialog(this).show {
-                    title(R.string.gms_manager)
-                    message(text = result.msg)
-                    positiveButton(R.string.done)
-                }
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.gms_manager)
+                    .setMessage(result.msg)
+                    .setPositiveButton(R.string.done, null)
+                    .show()
             }
         }
 
@@ -96,31 +96,31 @@ class GmsManagerActivity : LoadingActivity() {
     }
 
     private fun installGms(userID: Int, checkbox: Switch){
-        MaterialDialog(this).show {
-            title(R.string.enable_gms)
-            message(R.string.enable_gms_hint)
-            positiveButton(R.string.done){
+        AlertDialog.Builder(this)
+            .setTitle(R.string.enable_gms)
+            .setMessage(R.string.enable_gms_hint)
+            .setPositiveButton(R.string.done) { _, _ ->
                 showLoading()
                 viewModel.installGms(userID)
             }
-            negativeButton(R.string.cancel){
+            .setNegativeButton(R.string.cancel) { _, _ ->
                 checkbox.isChecked = !checkbox.isChecked
             }
-        }
+            .show()
     }
 
     private fun uninstallGms(userID: Int, checkbox: Switch){
-        MaterialDialog(this).show {
-            title(R.string.disable_gms)
-            message(R.string.disable_gms_hint)
-            positiveButton(R.string.done){
+        AlertDialog.Builder(this)
+            .setTitle(R.string.disable_gms)
+            .setMessage(R.string.disable_gms_hint)
+            .setPositiveButton(R.string.done) { _, _ ->
                 showLoading()
                 viewModel.uninstallGms(userID)
             }
-            negativeButton(R.string.cancel){
+            .setNegativeButton(R.string.cancel) { _, _ ->
                 checkbox.isChecked = !checkbox.isChecked
             }
-        }
+            .show()
     }
 
 

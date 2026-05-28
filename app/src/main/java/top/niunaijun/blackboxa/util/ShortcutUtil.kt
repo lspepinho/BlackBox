@@ -2,12 +2,12 @@ package top.niunaijun.blackboxa.util
 
 import android.content.Context
 import android.content.Intent
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
-import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.input.input
 import top.niunaijun.blackboxa.R
 import top.niunaijun.blackboxa.app.App
 import top.niunaijun.blackboxa.app.AppManager
@@ -37,24 +37,30 @@ object ShortcutUtil {
                 .setAction(Intent.ACTION_MAIN)
                 .putExtra("pkg", info.packageName)
                 .putExtra("userId", userID)
-            MaterialDialog(context).show {
-                title(res = R.string.app_shortcut)
-                input(
-                    hintRes = R.string.shortcut_name,
-                    prefill = labelName
-                ) { _, input ->
-
-                    val shortcutInfo: ShortcutInfoCompat =
-                        ShortcutInfoCompat.Builder(context, info.packageName + userID)
-                            .setIntent(intent)
-                            .setShortLabel(input)
-                            .setLongLabel(input)
-                            .setIcon(IconCompat.createWithBitmap(info.icon.toBitmap()))
-                            .build()
+            val input = EditText(context)
+            input.text.append(labelName)
+            AlertDialog.Builder(context)
+                .setTitle(R.string.app_shortcut)
+                .setView(input)
+                .setPositiveButton(R.string.done) { _, _ ->
+                    val shortcutLabel = input.text.toString()
+                    val shortcutInfo: ShortcutInfoCompat = ShortcutInfoCompat.Builder(context, info.packageName + userID)
+                        .setIntent(intent)
+                        .setShortLabel(shortcutLabel)
+                        .setLongLabel(shortcutLabel)
+                        .setIcon(IconCompat.createWithBitmap(info.icon.toBitmap()))
+                        .build()
 
                     ShortcutManagerCompat.requestPinShortcut(context, shortcutInfo, null)
                     showAllowPermissionDialog(context)
                 }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+
+        } else {
+            toast(R.string.cannot_create_shortcut)
+        }
+    }
                 positiveButton(R.string.done)
                 negativeButton(R.string.cancel)
             }
@@ -69,18 +75,16 @@ object ShortcutUtil {
             return
         }
 
-        MaterialDialog(context).show {
-            title(R.string.try_add_shortcut)
-            message(R.string.add_shortcut_fail_msg)
-            positiveButton(R.string.done)
-            negativeButton(R.string.permission_setting){
+        AlertDialog.Builder(context)
+            .setTitle(R.string.try_add_shortcut)
+            .setMessage(R.string.add_shortcut_fail_msg)
+            .setPositiveButton(R.string.done, null)
+            .setNegativeButton(R.string.permission_setting) { _, _ ->
                 App.getContext().openAppSystemSettings()
             }
-
-            neutralButton(R.string.no_reminders){
+            .setNeutralButton(R.string.no_reminders) { _, _ ->
                 AppManager.mBlackBoxLoader.invalidShortcutPermissionDialog(false)
             }
-        }
-
+            .show()
     }
 }

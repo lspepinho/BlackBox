@@ -8,10 +8,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import cbfg.rvadapter.RVAdapter
-import com.ferfalk.simplesearchview.SimpleSearchView
 import top.niunaijun.blackboxa.R
 import top.niunaijun.blackboxa.bean.InstalledAppBean
 import top.niunaijun.blackboxa.databinding.ActivityListBinding
@@ -48,20 +48,15 @@ class ListActivity : BaseActivity() {
     }
 
     private fun initSearchView() {
-        viewBinding.searchView.setOnQueryTextListener(object : SimpleSearchView.OnQueryTextListener {
+        viewBinding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
                 filterApp(newText)
-                return true
-            }
-
-            override fun onQueryTextCleared(): Boolean {
                 return true
             }
 
             override fun onQueryTextSubmit(query: String): Boolean {
                 return true
             }
-
         })
     }
 
@@ -127,8 +122,8 @@ class ListActivity : BaseActivity() {
 
 
     override fun onBackPressed() {
-        if (viewBinding.searchView.isSearchOpen) {
-            viewBinding.searchView.closeSearch()
+        if (!viewBinding.searchView.isIconified) {
+            viewBinding.searchView.isIconified = true
         } else {
             super.onBackPressed()
         }
@@ -143,9 +138,6 @@ class ListActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_list, menu)
-        val item = menu!!.findItem(R.id.list_search)
-        viewBinding.searchView.setMenuItem(item)
-
         return true
     }
 
