@@ -51,23 +51,15 @@ object ShortcutUtil {
                         .setIcon(IconCompat.createWithBitmap(info.icon.toBitmap()))
                         .build()
 
-                    ShortcutManagerCompat.requestPinShortcut(context, shortcutInfo, null)
-                    showAllowPermissionDialog(context)
-                }
-                .setNegativeButton(R.string.cancel, null)
-                .show()
-
-        } else {
-            toast(R.string.cannot_create_shortcut)
-        }
+        ShortcutManagerCompat.requestPinShortcut(context, shortcutInfo, null)
+        showAllowPermissionDialog(context)
     }
-                positiveButton(R.string.done)
-                negativeButton(R.string.cancel)
-            }
+    .setNegativeButton(R.string.cancel, null)
+    .show()
 
-        } else {
-            toast(R.string.cannot_create_shortcut)
-        }
+    } else {
+        toast(R.string.cannot_create_shortcut)
+    }
     }
 
     private fun showAllowPermissionDialog(context: Context){

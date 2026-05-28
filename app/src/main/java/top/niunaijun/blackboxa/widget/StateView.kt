@@ -70,7 +70,7 @@ class StateView @JvmOverloads constructor(
         contentView?.visibility = View.VISIBLE
     }
 
-    override fun addView(child: View?, index: Int, params: LayoutParams?) {
+    override fun addView(child: View?, index: Int, params: android.view.ViewGroup.LayoutParams?) {
         if (child === loadingView || child === emptyView) {
             super.addView(child, index, params)
             return
