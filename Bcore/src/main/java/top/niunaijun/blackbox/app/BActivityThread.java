@@ -29,6 +29,7 @@ import android.text.TextUtils;
 import android.webkit.WebView;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.security.Security;
 import java.util.ArrayList;
@@ -317,6 +318,8 @@ public class BActivityThread extends IBActivityThread.Stub {
         // fix applicationInfo
         BRLoadedApk.get(loadedApk)._set_mApplicationInfo(applicationInfo);
 
+        injectSharedLibraries(loadedApk, applicationInfo);
+
         int targetSdkVersion = applicationInfo.targetSdkVersion;
         if (targetSdkVersion < Build.VERSION_CODES.GINGERBREAD) {
             StrictMode.ThreadPolicy newPolicy = new StrictMode.ThreadPolicy.Builder(StrictMode.getThreadPolicy()).permitNetwork().build();
@@ -377,9 +380,8 @@ public class BActivityThread extends IBActivityThread.Stub {
             onAfterApplicationOnCreate(packageName, processName, application);
 
             HookManager.get().checkEnv(HCallbackProxy.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Unable to makeApplication", e);
+        } catch (Throwable e) {
+            Slog.e(TAG, "handleBindApplication: Unable to start " + packageName, e);
         }
     }
 
@@ -391,6 +393,74 @@ public class BActivityThread extends IBActivityThread.Stub {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static void injectSharedLibraries(Object loadedApk, ApplicationInfo applicationInfo) {
+        if (applicationInfo.sharedLibraryFiles == null || applicationInfo.sharedLibraryFiles.length == 0) {
+            return;
+        }
+        try {
+            BRLoadedApk.get(loadedApk)._set_mClassLoader(null);
+            Slog.d(TAG, "injectSharedLibraries: reset classloader cache, sharedLibraryFiles="
+                    + Arrays.toString(applicationInfo.sharedLibraryFiles));
+        } catch (Throwable e) {
+            Slog.e(TAG, "injectSharedLibraries: reset failed, trying manual inject", e);
+            injectSharedLibrariesManual(loadedApk, applicationInfo);
+        }
+    }
+
+    private static void injectSharedLibrariesManual(Object loadedApk, ApplicationInfo applicationInfo) {
+        try {
+            ClassLoader classLoader = BRLoadedApk.get(loadedApk).getClassLoader();
+            if (classLoader == null) return;
+            Object dexPathList = Reflector.on("dalvik.system.BaseDexClassLoader")
+                    .field("pathList")
+                    .get(classLoader);
+            if (dexPathList == null) return;
+            Object[] oldElements = Reflector.with(dexPathList).field("dexElements").get();
+            Object[] newElements = oldElements;
+            for (String sharedLib : applicationInfo.sharedLibraryFiles) {
+                if (sharedLib == null) continue;
+                File libFile = new File(sharedLib);
+                if (!libFile.exists()) continue;
+                boolean alreadyLoaded = false;
+                for (Object element : oldElements) {
+                    try {
+                        String path = Reflector.with(element).field("path").get();
+                        if (sharedLib.equals(path)) {
+                            alreadyLoaded = true;
+                            break;
+                        }
+                    } catch (Throwable ignored) {
+                    }
+                }
+                if (alreadyLoaded) continue;
+                try {
+                    Object dexFileObj = Reflector.on("dalvik.system.DexFile")
+                            .method("loadDex", String.class, String.class, int.class)
+                            .call(sharedLib, null, 0);
+                    if (dexFileObj == null) continue;
+                    Class<?> elementClass = oldElements.length > 0
+                            ? oldElements[0].getClass()
+                            : Class.forName("dalvik.system.DexPathList$Element");
+                    Object newElement = Reflector.on(elementClass)
+                            .constructor(File.class, boolean.class, File.class, dexFileObj.getClass())
+                            .newInstance(libFile, false, libFile, dexFileObj);
+                    Object[] merged = (Object[]) Array.newInstance(elementClass, newElements.length + 1);
+                    System.arraycopy(newElements, 0, merged, 0, newElements.length);
+                    merged[newElements.length] = newElement;
+                    newElements = merged;
+                } catch (Throwable e) {
+                    Slog.e(TAG, "injectSharedLibrariesManual: failed to inject " + sharedLib, e);
+                }
+            }
+            if (newElements != oldElements) {
+                Reflector.with(dexPathList).field("dexElements").set(newElements);
+                Slog.d(TAG, "injectSharedLibrariesManual: injected " + (newElements.length - oldElements.length) + " shared libraries");
+            }
+        } catch (Throwable e) {
+            Slog.e(TAG, "injectSharedLibrariesManual: failed", e);
+        }
     }
 
     private void installProviders(Context context, String processName, List<ProviderInfo> provider) {

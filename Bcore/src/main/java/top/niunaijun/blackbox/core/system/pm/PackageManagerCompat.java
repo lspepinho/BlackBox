@@ -17,6 +17,7 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Build;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -388,9 +389,43 @@ public class PackageManagerCompat {
                         outPaths.add(libInfo.sourceDir);
                     }
                 } catch (PackageManager.NameNotFoundException ignored) {
+                    resolveSharedLibraryByName(name, outPaths);
                 }
             }
         } catch (Throwable ignored) {
+        }
+    }
+
+    private static final String[] SYSTEM_LIB_PATHS = {
+            "/system/framework/org.apache.http.legacy.jar",
+            "/system/framework/org.apache.http.legacy.boot.jar",
+            "/system/framework/com.google.android.maps.jar",
+            "/system/framework/android.test.base.jar",
+            "/system/framework/android.hidl.base-V1.0-java.jar",
+            "/system/framework/ext.jar",
+    };
+
+    private static void resolveSharedLibraryByName(String name, Set<String> outPaths) {
+        if ("org.apache.http.legacy".equals(name)) {
+            for (String path : new String[]{"/system/framework/org.apache.http.legacy.jar", "/system/framework/org.apache.http.legacy.boot.jar"}) {
+                if (new File(path).exists()) {
+                    outPaths.add(path);
+                    return;
+                }
+            }
+            return;
+        }
+        for (String path : SYSTEM_LIB_PATHS) {
+            if (path.contains(name.replace('.', '_')) || path.contains(name.replace('.', '/'))) {
+                if (new File(path).exists()) {
+                    outPaths.add(path);
+                    return;
+                }
+            }
+        }
+        String guess = "/system/framework/" + name.replace('.', '_') + ".jar";
+        if (new File(guess).exists()) {
+            outPaths.add(guess);
         }
     }
 

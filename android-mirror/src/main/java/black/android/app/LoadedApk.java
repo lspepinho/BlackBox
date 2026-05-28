@@ -47,6 +47,9 @@ public interface LoadedApk {
     @BField
     boolean mPackageName();
 
+    @BField
+    ClassLoader mClassLoader();
+
     @BMethod
     Object getResources();
 
