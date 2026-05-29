@@ -79,8 +79,18 @@ public final class SharedUserSetting implements Parcelable {
             HashMap hashMap = parcel.readHashMap(SharedUserSetting.class.getClassLoader());
             synchronized (sSharedUsers) {
                 sSharedUsers.clear();
-                sSharedUsers.putAll(hashMap);
+                if (hashMap != null) {
+                    sSharedUsers.putAll(hashMap);
+                }
             }
+        } catch (Throwable e) {
+            synchronized (sSharedUsers) {
+                sSharedUsers.clear();
+            }
+        } finally {
+            parcel.recycle();
+        }
+    }
         } catch (Exception e) {
 //            e.printStackTrace();
         } finally {
@@ -103,11 +113,13 @@ public final class SharedUserSetting implements Parcelable {
     public void readFromParcel(Parcel source) {
         this.name = source.readString();
         this.userId = source.readInt();
+        this.seInfoTargetSdkVersion = source.readInt();
     }
 
     protected SharedUserSetting(Parcel in) {
         this.name = in.readString();
         this.userId = in.readInt();
+        this.seInfoTargetSdkVersion = in.readInt();
     }
 
     public static final Parcelable.Creator<SharedUserSetting> CREATOR = new Parcelable.Creator<SharedUserSetting>() {
