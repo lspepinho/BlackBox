@@ -83,22 +83,16 @@ public final class SharedUserSetting implements Parcelable {
                     sSharedUsers.putAll(hashMap);
                 }
             }
-        } catch (Throwable e) {
-            synchronized (sSharedUsers) {
-                sSharedUsers.clear();
-            }
-        } finally {
-            parcel.recycle();
+    } catch (Throwable e) {
+        synchronized (sSharedUsers) {
+            sSharedUsers.clear();
         }
+    } finally {
+        parcel.recycle();
     }
-        } catch (Exception e) {
-//            e.printStackTrace();
-        } finally {
-            parcel.recycle();
-        }
-    }
+}
 
-    @Override
+@Override
     public int describeContents() {
         return 0;
     }
