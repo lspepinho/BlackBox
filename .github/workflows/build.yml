@@ -13,11 +13,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-  - name: Set up JDK 17
-    uses: actions/setup-java@v4
-    with:
-      java-version: '17'
-      distribution: 'temurin'
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'zulu'
 
       - name: Clean SDK and install compatible components
         run: |
@@ -25,11 +25,11 @@ jobs:
           rm -rf "$ANDROID_SDK_ROOT/platforms" "$ANDROID_SDK_ROOT/build-tools" "$ANDROID_SDK_ROOT/ndk"
           "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --install "build-tools;28.0.2" "build-tools;30.0.3" "platforms;android-29" "platforms;android-30" "ndk;21.4.7075529" "cmake;3.18.1"
 
-  - name: Switch to JDK 8 for build
-    uses: actions/setup-java@v4
-    with:
-      java-version: '8'
-      distribution: 'temurin'
+      - name: Switch to JDK 8 for build
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'zulu'
 
       - name: Cache Gradle
         uses: actions/cache@v4
